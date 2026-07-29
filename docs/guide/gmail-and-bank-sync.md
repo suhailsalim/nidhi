@@ -8,9 +8,14 @@ app requires a free Google OAuth client ID — see the repo README.
 
 Two scans run, on demand and periodically in the background:
 
-1. **Transaction alerts** — bank/card alert emails (HDFC, Axis, Scapia/Federal RuPay, …) become
-   transactions within minutes of a purchase. Daily "available balance" emails become dated balance
-   anchors, so your balance tracks even between statements.
+1. **Transaction alerts** — bank/card alert emails (HDFC, ICICI, Axis, Scapia/Federal RuPay, …) become
+   transactions within minutes of a purchase. That covers UPI, NEFT/IMPS transfers, debit-card and
+   ATM withdrawals, credit-card spends and refunds, **salary credits**, and **standing-instruction
+   auto-debits** such as loan EMIs, card autopay and RD instalments. Daily "available balance" emails
+   become dated balance anchors, so your balance tracks even between statements.
+
+   Mail that quotes money but moves none — OTPs, declined payments, "will be debited" reminders,
+   mandate registrations and statement notices — is ignored, so nothing phantom lands in your ledger.
 2. **Statement attachments** — statement PDFs attached to emails are imported automatically, using
    your vaulted passwords. Locked ones queue under Settings → **Needs password**.
 

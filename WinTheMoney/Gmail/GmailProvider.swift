@@ -14,10 +14,20 @@ enum GmailError: LocalizedError {
 /// Gmail REST: lists bank/card alert emails and parses them into transactions.
 enum GmailProvider {
     /// Senders for Indian bank/card alerts; broad `from:` substrings + content keywords.
+    /// The sender list must spell out **both** each issuer's legacy domain and its `<bank>.bank.in`
+    /// migration — `from:axisbank` does not match `alerts@axis.bank.in`, which silently hid every
+    /// Axis alert once they migrated. Keywords cover the wordings that carry no issuer name:
+    /// `deducted` (standing-instruction auto-debits, i.e. loan EMIs) and the deposit/salary alerts.
     static func query(days: Int) -> String {
-        "newer_than:\(days)d (from:hdfcbank OR from:axisbank OR from:scapia OR from:federalbank " +
-        "OR \"has been debited\" OR \"has been credited\" OR \"is debited\" OR \"is credited\" " +
-        "OR \"Transaction Amount\" OR \"Credit Card\")"
+        let senders = ["hdfcbank", "axisbank", "axis.bank.in", "icicibank", "scapia",
+                       "federalbank", "federal.bank.in", "kotak", "sbicard"]
+            .map { "from:\($0)" }.joined(separator: " OR ")
+        let phrases = ["\"has been debited\"", "\"has been credited\"", "\"is debited\"", "\"is credited\"",
+                       "\"is deducted\"", "\"has been deducted\"", "\"successfully credited\"",
+                       "\"amount received\"", "\"credited/received\"", "\"received a credit\"",
+                       "\"Transaction Amount\"", "\"has been used for a transaction\"",
+                       "\"available balance\"", "\"Credit Card\""].joined(separator: " OR ")
+        return "newer_than:\(days)d (\(senders) OR \(phrases))"
     }
 
     /// Lists matching alert emails and parses the ones not already seen. `skip` holds message ids
@@ -27,6 +37,11 @@ enum GmailProvider {
         -> (txns: [SyncedTxn], balances: [BalanceUpdate], scanned: [String]) {
         var ids: [String] = []
         var pageToken: String?
+        // Gmail lists newest-first, so a fixed cap makes a wide window pointless — every scan would
+        // re-read the same newest N and never reach the older mail the window was widened for. The
+        // ceiling therefore scales with the window (listing is one cheap call per 100 ids; the
+        // expensive body fetches are still bounded by the processed-message ledger).
+        let idCeiling = min(20_000, max(600, days * 20))
         repeat {
             var c = URLComponents(string: "https://gmail.googleapis.com/gmail/v1/users/me/messages")!
             c.queryItems = [.init(name: "q", value: query(days: days)), .init(name: "maxResults", value: "100")]
@@ -34,7 +49,7 @@ enum GmailProvider {
             let json = try await get(c.url!, accessToken) as? [String: Any] ?? [:]
             ids += (json["messages"] as? [[String: Any]])?.compactMap { $0["id"] as? String } ?? []
             pageToken = json["nextPageToken"] as? String
-        } while pageToken != nil && ids.count < 600
+        } while pageToken != nil && ids.count < idCeiling
 
         var out: [SyncedTxn] = []
         var balances: [BalanceUpdate] = []
@@ -48,8 +63,11 @@ enum GmailProvider {
             func h(_ n: String) -> String { headers.first { ($0["name"] as? String)?.lowercased() == n.lowercased() }?["value"] as? String ?? "" }
             let src = EmailTransactionParser.Source(id: id, sender: h("From"), subject: h("Subject"),
                                                     dateHeader: h("Date"), body: bodyText(payload))
-            if let t = EmailTransactionParser.parse(src) { out.append(t) }
-            else if let b = EmailTransactionParser.balance(src) { balances.append(b) }
+            // Both, not either: a transaction alert also states the balance *after* the movement,
+            // which is a fresher anchor than the daily balance mail.
+            let t = EmailTransactionParser.parse(src)
+            if let t { out.append(t) }
+            if let b = EmailTransactionParser.balance(src, txn: t) { balances.append(b) }
         }
         return (out, balances, scanned)
     }
@@ -62,7 +80,8 @@ enum GmailProvider {
     static func statementQuery(days: Int) -> String {
         // Require a known BANK/CARD issuer sender AND statement wording, so brokerage /
         // investment statements (IND Money, Paytm Money, Groww, Zerodha, CAMS, …) are excluded.
-        let issuers = ["hdfcbank", "axisbank", "icicibank", "federalbank", "scapia", "sbicard", "sbi",
+        let issuers = ["hdfcbank", "axisbank", "axis.bank.in", "icicibank", "federalbank",
+                       "federal.bank.in", "scapia", "sbicard", "sbi",
                        "kotak", "idfcfirstbank", "yesbank", "rblbank", "indusind", "aubank", "hsbc",
                        "standardchartered", "americanexpress", "amex"]
         let from = issuers.map { "from:\($0)" }.joined(separator: " OR ")
@@ -70,8 +89,11 @@ enum GmailProvider {
                        "camsonline", "mfcentral", "nsdl", "cdsl"].map { "-from:\($0)" }.joined(separator: " ")
         // Loan foreclosure / pre-payment statements carry "Statement" in the subject but list
         // payable figures, not transactions — exclude them here too (content guard backstops this).
+        // EasyEMI amortisation schedules also arrive as "statement"-ish PDFs from a card sender but
+        // list a repayment plan, not transactions.
         let closure = "-subject:foreclosure -subject:foreclose -subject:\"pre-payment\" " +
-                      "-subject:prepayment -subject:\"pre-closure\" -subject:preclosure"
+                      "-subject:prepayment -subject:\"pre-closure\" -subject:preclosure " +
+                      "-subject:amortization -subject:amortisation"
         return "newer_than:\(days)d has:attachment filename:pdf (\(from)) " +
                "subject:(statement OR e-statement OR \"account statement\" OR \"credit card statement\") " +
                "\(exclude) \(closure) -subject:portfolio -subject:holdings -subject:\"capital gains\""

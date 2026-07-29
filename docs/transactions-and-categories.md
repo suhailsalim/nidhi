@@ -32,9 +32,12 @@ and retro-applies it.
 ## Root categories
 
 Locked, maintained set in `Store.baseCategories`: Eating out, Online food delivery, Groceries, Transport,
-Travel, Fuel, Shopping, Subscriptions, Entertainment, Bills & Utilities, Insurance, EMI & Loans, Health,
-Education, Family, Investments, Other. `ensureBaseCategories` keeps them present; `symbolFor` maps names
-to SF Symbols; `migrateRentBills` renamed the legacy "Rent & Bills" → "Bills & Utilities".
+Travel, Fuel, Shopping, Subscriptions, Entertainment, Bills & Utilities, Insurance, Tax, EMI & Loans,
+Health, Education, Family, Investments, Other. `ensureBaseCategories` keeps them present; `symbolFor` maps
+names to SF Symbols; `migrateRentBills` renamed the legacy "Rent & Bills" → "Bills & Utilities".
+Tax splits by facet tag: **"Direct tax"** (CBDT / income tax / OLTAS / ITNS challans / advance &
+self-assessment tax — CBDT is the Central Board of Direct Taxes) and **"Indirect tax"** (GST / GSTN /
+CGST / SGST / IGST / UTGST, CBIC epayments, and ICEGATE / customs duty).
 
 ## Retroactive re-scan — `Store.recategorizeAll()`
 

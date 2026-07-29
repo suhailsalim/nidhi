@@ -102,7 +102,15 @@ enum BrandCatalog {
         .init(patterns: ["PHARMEASY", "\\b1MG\\b", "TATA ?1MG", "NETMEDS", "APOLLO", "PHARMAC", "MEDPLUS", "WELLNESS ?FOREVER", "\\bDDRC\\b", "\\bSRL\\b", "\\bLAL ?PATH", "METROPOLIS", "DIAGNOSTIC", "HOSPITAL", "CLINIC", "\\bLAB\\b", "PRACTO", "CULT\\.?FIT", "CUREFIT", "MEDICAL"], brand: "Health & pharmacy", category: "Health", tags: ["Health"]),
         // ── Insurance ──
         .init(patterns: ["\\bLIC\\b", "HDFC ?LIFE", "ICICI ?PRU", "SBI ?LIFE", "MAX ?LIFE", "STAR ?HEALTH", "NIVA ?BUPA", "\\bACKO\\b", "\\bDIGIT\\b", "POLICYBAZAAR", "TATA ?AIG", "BAJAJ ?ALLIANZ", "INSURANCE", "\\bPREMIUM\\b ?(PAY|LIC)"], brand: "Insurance", category: "Insurance", tags: ["Insurance"]),
+        // ── Taxes (CBDT = Central Board of Direct Taxes → income tax; CBIC/GST → indirect) ──
+        .init(patterns: ["\\bCBDT\\b", "INCOME ?TAX", "DIRECT ?TAX", "\\bOLTAS\\b", "\\bITNS\\b", "TIN ?NSDL", "ADVANCE ?TAX", "SELF ?ASSESS"], brand: "Income Tax", category: "Tax", tags: ["Direct tax"]),
+        .init(patterns: ["\\bGSTN?\\b", "\\bCBIC\\b", "\\b[ICSU]GST\\b", "\\bUTGST\\b"], brand: "GST", category: "Tax", tags: ["Indirect tax"]),
+        .init(patterns: ["ICEGATE", "CUSTOMS? ?DUTY"], brand: "Customs duty", category: "Tax", tags: ["Indirect tax"]),
         // ── EMI & Loans ──
+        // Recurring-deposit instalments must precede the generic EMI rule: their narration says
+        // "RD Installment", which the EMI rule's \bINSTALLMENT\b pattern would otherwise claim. An RD
+        // instalment is money moving into the user's own deposit, not borrowing costs.
+        .init(patterns: ["\\bRD ?INSTAL", "RECURRING ?DEPOSIT"], brand: "Recurring deposit", category: "Investments", tags: ["Deposit"]),
         .init(patterns: ["MUTHOOT"], brand: "Muthoot Finance", category: "EMI & Loans", tags: ["Loan"]),
         .init(patterns: ["\\bEMI\\b", "\\bLOAN\\b", "BAJAJ ?FIN", "\\bNBFC\\b", "EARLYSALARY", "KREDITBEE", "MONEYVIEW", "HOME ?CREDIT", "INSTALLMENT", "\\bEMANDATE.*LOAN"], brand: "EMI / loan", category: "EMI & Loans", tags: ["Loan"]),
         // ── Education ──
