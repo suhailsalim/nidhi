@@ -135,7 +135,9 @@ final class Store: ObservableObject {
         load()
         if let t = ProcessInfo.processInfo.environment["WTM_TAB"], let forced = Tab(rawValue: t) { tab = forced }
         // One-time retroactive re-categorisation when the brand library version bumps.
-        let catLibVersion = 2
+        // v3: Tax category + direct-tax (CBDT/income tax) and indirect-tax (GST/CBIC/customs)
+        // rules — moves past tax debits out of "Other".
+        let catLibVersion = 3
         if UserDefaults.standard.integer(forKey: "wtm_cat_lib_v") < catLibVersion, !txns.isEmpty {
             recategorizeAll()
         }
@@ -826,7 +828,9 @@ final class Store: ObservableObject {
             if s.source == .card { ensureCard(mask: s.accountMask, bankCode: s.bankCode) }
             else if s.source == .bank { ensureBank(mask: s.accountMask, bankCode: s.bankCode) }
 
-            let accName = accountName(forMask: s.accountMask, source: s.source)
+            // Unattributable rows (an issuer we hold no account for) are dropped rather than parked
+            // on an arbitrary account — see `accountName`.
+            guard let accName = accountName(forMask: s.accountMask, source: s.source, bankCode: s.bankCode) else { continue }
             // Statement imports reconcile against existing alert transactions by amount+date so the
             // same event isn't stored twice with two different merchant spellings.
             if reconcile, let i = duplicateBankIndex(for: s, accountName: accName) {
@@ -846,9 +850,12 @@ final class Store: ObservableObject {
             if adjustBalances {
                 // Anchored accounts re-derive from (anchor + later txns) in recomputeBankBalances()
                 // below — adding here too would double-count. Only un-anchored accounts run a balance.
-                if s.source == .bank, let bi = banks.firstIndex(where: { $0.mask == s.accountMask }) {
+                // Keyed on the *resolved* account, not the raw mask: a debit-card alert carries the
+                // card's last-4, so matching on the mask skipped the balance move for every one of
+                // them and left the ledger and the balance disagreeing by the debit-card total.
+                if s.source == .bank, let bi = banks.firstIndex(where: { $0.name == accName }) {
                     if banks[bi].balanceAnchor == nil { banks[bi].balance += s.amount }
-                } else if s.source == .card, let ci = cards.firstIndex(where: { $0.mask == s.accountMask }) {
+                } else if s.source == .card, let ci = cards.firstIndex(where: { $0.name == accName }) {
                     cards[ci].outstanding = max(0, cards[ci].outstanding - s.amount)
                 }
             }
@@ -867,7 +874,10 @@ final class Store: ObservableObject {
     func mergeStatement(account: SyncedAccount, txns incoming: [SyncedTxn],
                         statementRecordId: UUID? = nil) -> (added: Int, enriched: Int) {
         upsertAccount(account)
-        let accName = accountName(forMask: account.mask, source: account.kind)
+        // `upsertAccount` has just created/updated this account, so resolution always succeeds.
+        guard let accName = accountName(forMask: account.mask, source: account.kind, bankCode: account.bankCode) else {
+            return (0, 0)
+        }
         let knownExt = Set(self.txns.compactMap(\.externalId))
         var added = 0, enriched = 0
         for s in incoming.sorted(by: { $0.date < $1.date }) {
@@ -1030,7 +1040,37 @@ final class Store: ObservableObject {
                 if !txns[bi].tags.contains("Credit card bill") { txns[bi].tags.append("Credit card bill") }
             }
         }
+        correlateOwnAccountTransfers()
         reconcileCardDues()
+    }
+
+    /// Moving money between the user's *own* accounts is not spend and not income — but it arrives as
+    /// two independent alerts (a debit on the source, a credit on the destination), so both totals
+    /// inflate unless the pair is recognised. The alert names the far account
+    /// ("IB FUNDS TRANSFER DR-XXXXXXXXXX2421-…", "…credited to the account ending xxxxxxxxxx2421"),
+    /// which the parsers surface as a `••<last4>` suffix; a suffix matching an account we own is the
+    /// signal. Only the *destination* is asserted by the mail, so the matching credit is still
+    /// confirmed by amount and date before either side is flagged.
+    private func correlateOwnAccountTransfers() {
+        let ownMasks = Set(banks.map(\.mask)).filter { !$0.isEmpty }
+        for i in txns.indices {
+            let t = txns[i]
+            guard t.source == .bank, t.amount < 0, !t.transfer,
+                  let r = t.merchant.range(of: #"••(\d{3,})"#, options: .regularExpression) else { continue }
+            let target = String(t.merchant[r].dropFirst(2))
+            guard ownMasks.contains(target), banks.first(where: { $0.name == t.account })?.mask != target,
+                  let dest = banks.first(where: { $0.mask == target }) else { continue }
+            // The mirror credit on the destination account, same amount, within a few days.
+            let mirror = txns.firstIndex { c in
+                c.source == .bank && c.amount > 0 && c.account == dest.name
+                    && abs(c.amount + t.amount) < 0.01 && abs(c.date.timeIntervalSince(t.date)) <= 3 * 86400
+            }
+            guard let mi = mirror else { continue }
+            for j in [i, mi] {
+                txns[j].transfer = true
+                if !txns[j].tags.contains("Self transfer") { txns[j].tags.append("Self transfer") }
+            }
+        }
     }
 
     /// Flip a card's due to "cleared" once a bill payment ≥ its minimum lands after the statement —
@@ -1076,7 +1116,8 @@ final class Store: ObservableObject {
             rec.txnCount = txns.filter { $0.statementRecordId == rid }.count
             rec.depositCount = depAdded
             if rec.accountName == nil, let a = r.accounts.first {
-                rec.accountName = accountName(forMask: a.mask, source: a.kind); rec.accountMask = a.mask
+                rec.accountName = accountName(forMask: a.mask, source: a.kind, bankCode: a.bankCode)
+                rec.accountMask = a.mask
             }
             if rec.periodStart == nil {
                 let dates = r.txns.map(\.date).sorted()
@@ -1216,10 +1257,27 @@ final class Store: ObservableObject {
             if b.colorHex == "4F7FC4" { b.colorHex = info.colorHex }
         }
     }
-    private func accountName(forMask mask: String, source: TxnSource) -> String {
-        if source == .card, let c = cards.first(where: { $0.mask == mask }) { return c.name }
-        if let b = banks.first(where: { $0.mask == mask }) { return b.name }
-        return banks.first?.name ?? "Bank"
+    /// Resolve the display account for an incoming transaction, or nil when it can't be attributed.
+    ///
+    /// `mask` is deliberately **empty** for feeds that identify the account only by issuer — a
+    /// debit-card alert quotes the *card's* last-4 (which differs from the account's), and an
+    /// e-mandate card charge quotes no number at all. Creating an account per card last-4 would
+    /// scatter one bank account across several phantom ones, so those resolve by `bankCode`.
+    ///
+    /// Returning nil is deliberate and the callers drop the row. The alternatives are both worse:
+    /// falling back to "the first account" silently books one issuer's spend against another's
+    /// balance, and inventing a placeholder account leaves a phantom the user must clean up. A card
+    /// charge in particular must **never** fall through to a bank account — an anchored bank balance
+    /// re-derives from its transactions, so a stray card row corrupts the figure permanently.
+    private func accountName(forMask mask: String, source: TxnSource, bankCode: String? = nil) -> String? {
+        if source == .card {
+            if !mask.isEmpty, let c = cards.first(where: { $0.mask == mask }) { return c.name }
+            if let code = bankCode, let c = cards.first(where: { $0.bankCode == code }) { return c.name }
+            return nil
+        }
+        if !mask.isEmpty, let b = banks.first(where: { $0.mask == mask }) { return b.name }
+        if let code = bankCode, let b = banks.first(where: { $0.bankCode == code }) { return b.name }
+        return mask.isEmpty ? nil : banks.first?.name
     }
 
     // MARK: merchant → category rules
@@ -1579,6 +1637,7 @@ final class Store: ObservableObject {
         ("Entertainment", "popcorn.fill", "4F7FC4", .wants),
         ("Bills & Utilities", "bolt.fill", "9AA7BE", .needs),
         ("Insurance", "shield.lefthalf.filled", "6E9BD8", .needs),
+        ("Tax", "building.columns.fill", "9AA7BE", .needs),
         ("EMI & Loans", "banknote.fill", "7FC4A3", .needs),
         ("Health", "heart.fill", "5BA585", .needs),
         ("Education", "graduationcap.fill", "4F7FC4", .needs),

@@ -1398,16 +1398,22 @@ struct GmailSettingsView: View {
                 }
                 SyncStatus(phase: gmailPhase)
             } header: { Text("Auto-import from transaction alerts") }
-            footer: { Text("Reads only bank & credit-card alert emails (read-only) and turns them into transactions. HDFC, Axis, Scapia-Federal supported.") }
+            footer: { Text("Reads only bank & credit-card alert emails (read-only) and turns them into transactions. HDFC, ICICI, Axis and Scapia-Federal supported — including salary credits, standing-instruction auto-debits (loan EMI, card autopay) and debit-card spends.") }
 
             Section {
                 Toggle(isOn: $gmail.autoScan) { Label("Auto-scan in background", systemImage: "clock.arrow.2.circlepath") }
+                // The longer windows are what make a real backfill possible: the parser understands
+                // wordings each bank retired years ago, but a 180-day ceiling means those mails are
+                // never fetched. Long windows stay cheap because the processed-message ledger skips
+                // anything already read.
                 Picker("Look back", selection: $gmail.scanDays) {
-                    Text("30 days").tag(30); Text("60 days").tag(60); Text("90 days").tag(90); Text("180 days").tag(180)
+                    Text("30 days").tag(30); Text("60 days").tag(60); Text("90 days").tag(90)
+                    Text("180 days").tag(180); Text("1 year").tag(365); Text("2 years").tag(730)
+                    Text("5 years").tag(1825); Text("All mail").tag(36500)
                 }.onChange(of: gmail.scanDays) { _, _ in gmail.saveConfig() }
                 if let d = gmail.lastScan { LabeledContent("Last scan", value: d.formatted(date: .abbreviated, time: .shortened)) }
             } header: { Text("Scan window") } footer: {
-                Text("Auto-scan refreshes on app open (hourly at most) and periodically in the background when iOS allows. Already-scanned emails are skipped, so re-scans are quick. Use “Re-scan all” to re-read everything in the window.")
+                Text("Auto-scan refreshes on app open (hourly at most) and periodically in the background when iOS allows. Already-scanned emails are skipped, so re-scans are quick. Use “Re-scan all” to re-read everything in the window — widen it first to backfill older history.")
             }
 
             Section {

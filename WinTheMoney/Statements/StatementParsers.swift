@@ -304,8 +304,10 @@ enum StatementParser {
             let segs = n.dropFirst(4).split(separator: "-").map { $0.trimmingCharacters(in: .whitespaces) }
             if let name = segs.first, name.count > 1 { return name.capitalized }
         }
-        if up.hasPrefix("NEFT") || up.hasPrefix("IMPS") || up.hasPrefix("RTGS") {
-            // …-<PAYEE>-… : pick the longest mostly-alphabetic segment
+        if up.hasPrefix("NEFT") || up.hasPrefix("IMPS") || up.hasPrefix("RTGS")
+            || up.hasPrefix("ACH") || up.hasPrefix("NACH") || up.hasPrefix("ECS") {
+            // …-<PAYEE>-… : pick the longest mostly-alphabetic segment (ACH D-<LENDER>-<ref>
+            // rows — loan EMI mandates — name the lender the same way NEFT names the payee)
             let segs = n.split(separator: "-").map { $0.trimmingCharacters(in: .whitespaces) }
             if let best = segs.filter({ $0.rangeOfCharacter(from: .letters) != nil && $0.count > 3 }).max(by: { $0.count < $1.count }) {
                 return best.capitalized

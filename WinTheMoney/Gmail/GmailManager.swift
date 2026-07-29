@@ -207,6 +207,22 @@ final class GmailManager: NSObject, ObservableObject {
     }
 
     // MARK: processed alert-email ledger
+    /// Bumped whenever `EmailTransactionParser` learns new formats. A scan that sees a stored
+    /// version older than this ignores the processed-message ledger once, so alerts the old
+    /// parser skipped (NEFT salary credits, ACH/NACH EMI debits) are backfilled. Store-side
+    /// externalId dedup ("gmail:<id>") keeps the re-merge idempotent.
+    /// v3: patterns rebuilt from a survey of every real alert format in the mailbox (HDFC
+    /// standing-instruction/EMI debits, deposit & salary credits, NetBanking transfers, IMPS,
+    /// debit-card spends, ICICI + Axis cards, Scapia rewards) — a full re-scan is what surfaces
+    /// years of transactions the old patterns walked past.
+    private static let parserVersion = 3
+    private static let parserVersionKey = "gmail_parser_version"
+    private var needsBackfillScan: Bool {
+        UserDefaults.standard.integer(forKey: Self.parserVersionKey) < Self.parserVersion
+    }
+    private func markMailBackfilled() {
+        UserDefaults.standard.set(Self.parserVersion, forKey: Self.parserVersionKey)
+    }
     private func markProcessedMsgs(_ ids: [String]) {
         guard !ids.isEmpty else { return }
         processedMsgs.formUnion(ids)
@@ -257,10 +273,11 @@ final class GmailManager: NSObject, ObservableObject {
             phase = .working("Reading transaction emails…")
             let token = try await accessToken()
             let (txns, balances, scanned) = try await GmailProvider.fetchTransactions(
-                accessToken: token, days: scanDays, skip: force ? [] : processedMsgs)
+                accessToken: token, days: scanDays, skip: (force || needsBackfillScan) ? [] : processedMsgs)
             let n = store.mergeSynced(accounts: [], txns: txns, adjustBalances: true)
             store.applyBalances(balances)
             markProcessedMsgs(scanned)
+            markMailBackfilled()
             UserDefaults.standard.set(Date(), forKey: "gmail_last")
             phase = .success(n)
         } catch {
