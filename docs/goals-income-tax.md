@@ -3,7 +3,7 @@
 ## Net worth
 
 `Store.liquidNetWorth = banks + deposits + investments` (cards/outstanding reduce it as applicable).
-`nwHistory` samples net worth once per day (`wtm_nw_day`) to drive the Wealth/Home trend charts.
+`nwHistory` samples net worth once per day (`nidhi_nw_day`) to drive the Wealth/Home trend charts.
 `netWorthTarget` and `milestones` track progress (see [gamification.md](gamification.md)).
 
 ## Goals (`Goal` / `GoalStatus`)

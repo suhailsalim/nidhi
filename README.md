@@ -1,6 +1,6 @@
 # Nidhi — निधि
 
-*(formerly "Win the Money" — code names, targets and bundle id keep the old name)*
+*(formerly "Nidhi" — code names, targets and bundle id keep the old name)*
 
 **[Website](https://suhailsalim.github.io/win-the-money/)** · **[Docs](https://suhailsalim.github.io/win-the-money/docs/)**
 *(site not yet published — see [`plans/PLAN-website.md`](plans/PLAN-website.md) for status)*
@@ -36,11 +36,11 @@ from your own Gmail and bank PDFs — entirely on your device.
 
 ```bash
 # open in Xcode
-open WinTheMoney.xcodeproj
+open Nidhi.xcodeproj
 
 # …or build for a simulator from the CLI
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
-  xcodebuild -project WinTheMoney.xcodeproj -scheme WinTheMoney \
+  xcodebuild -project Nidhi.xcodeproj -scheme Nidhi \
   -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
   -allowProvisioningUpdates build
 ```

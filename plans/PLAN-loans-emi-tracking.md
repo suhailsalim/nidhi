@@ -13,18 +13,18 @@ pure spend.
 
 ## Files to touch
 
-- [WinTheMoney/State/Models.swift](WinTheMoney/State/Models.swift) — `Loan { name, lender, principal, rate, emi,
+- [Nidhi/State/Models.swift](Nidhi/State/Models.swift) — `Loan { name, lender, principal, rate, emi,
   startDate, tenureMonths, mask, counterpartyKey }` + derived `outstanding(asOf:)` via amortisation.
-- [WinTheMoney/State/Persistence.swift](WinTheMoney/State/Persistence.swift) — new `Store.loans` collection into
+- [Nidhi/State/Persistence.swift](Nidhi/State/Persistence.swift) — new `Store.loans` collection into
   `Persist`/`makePersist`/`apply`/`clearAll` with tolerant decode (`default: []`).
-- [WinTheMoney/State/Store.swift](WinTheMoney/State/Store.swift) — `loans` published; `liquidNetWorth` unchanged
+- [Nidhi/State/Store.swift](Nidhi/State/Store.swift) — `loans` published; `liquidNetWorth` unchanged
   but add `netWorth = liquidNetWorth − Σ loans.outstanding`; classification: txns matching a loan's
   `counterpartyKey` get category "EMI & Loans" + tag "EMI" + linked loan id.
-- [WinTheMoney/UI/WealthView.swift](WinTheMoney/UI/WealthView.swift) — "Loans" section (outstanding, paid %,
+- [Nidhi/UI/WealthView.swift](Nidhi/UI/WealthView.swift) — "Loans" section (outstanding, paid %,
   months left); composition chart gains a liabilities bar.
-- [WinTheMoney/UI/Sheets.swift](WinTheMoney/UI/Sheets.swift) — Add/edit loan sheet (reuse `LabeledField`/
+- [Nidhi/UI/Sheets.swift](Nidhi/UI/Sheets.swift) — Add/edit loan sheet (reuse `LabeledField`/
   `LabeledAmountField`); link-to-recurring-group picker seeded from `recurringGroups`.
-- [WinTheMoney/UI/HomeView.swift](WinTheMoney/UI/HomeView.swift) — net worth headline: decide (and label)
+- [Nidhi/UI/HomeView.swift](Nidhi/UI/HomeView.swift) — net worth headline: decide (and label)
   whether Home shows liquid or net-of-loans; add a small "incl. loans" subtitle rather than silently
   changing the number users know.
 
@@ -53,7 +53,7 @@ pure spend.
   an established repo idiom.
 - The "EMI & Loans" category already exists in classification (bug-042 context) — link to it, don't
   create a duplicate.
-- Widgets/snapshot read net-worth figures — check `WTMShared` snapshot fields before renaming anything.
+- Widgets/snapshot read net-worth figures — check `NidhiShared` snapshot fields before renaming anything.
 
 ## Acceptance criteria
 

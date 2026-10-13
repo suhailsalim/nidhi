@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generate Nidhi logo SVGs — 4 concepts x 12 Indian scripts -> design/logos/<concept>/.
 
-Colors are the app's Zen palette (WinTheMoney/Theme.swift). Text uses system Indic
+Colors are the app's Zen palette (Nidhi/Theme.swift). Text uses system Indic
 fonts; before shipping as an app icon, convert text to outlines (e.g. open in a
 browser and print to PDF, or use a font tool) so rendering is font-independent.
 Re-run:  python3 design/logos/generate_logos.py

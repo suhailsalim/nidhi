@@ -95,7 +95,7 @@ func draw(_ style: Style, to path: String) {
     print("wrote \(path)")
 }
 
-let base = "/Users/suhailaka/win the money/WinTheMoney/Assets.xcassets/AppIcon.appiconset"
+let base = "/Users/suhailaka/Nidhi/Nidhi/Assets.xcassets/AppIcon.appiconset"
 draw(.light,  to: "\(base)/icon-light-1024.png")
 draw(.dark,   to: "\(base)/icon-dark-1024.png")
 draw(.tinted, to: "\(base)/icon-tinted-1024.png")

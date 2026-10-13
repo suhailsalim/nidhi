@@ -2,7 +2,7 @@
 
 ## Install & first launch
 
-Win the Money is a personal, open-source app — you build it yourself with Xcode 26+ onto an iOS 26
+Nidhi is a personal, open-source app — you build it yourself with Xcode 26+ onto an iOS 26
 device or simulator (see the repo `README.md` for the build command). On first launch the app seeds a
 default set of budget categories, a net-worth milestone ladder, and badge slots. Everything else starts
 empty until you add accounts or import data.

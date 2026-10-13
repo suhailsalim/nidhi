@@ -1,8 +1,8 @@
 # PLAN: Backup rotation, integrity check, and restore preview
 
 **Rank: 2 of 5.** All user data is ONE JSON blob in UserDefaults (`win_the_money_v1`) and the backup is
-ONE file (`WinTheMoney-backup.json`) overwritten in place on every auto-backup
-(`BackupManager.write`, [BackupManager.swift](WinTheMoney/State/BackupManager.swift)). Failure mode today: a
+ONE file (`Nidhi-backup.json`) overwritten in place on every auto-backup
+(`BackupManager.write`, [BackupManager.swift](Nidhi/State/BackupManager.swift)). Failure mode today: a
 bad state (accidental "Clear all data", a bug that empties collections, a corrupted save) gets
 auto-backed-up on next launch and **destroys the only backup**. For a no-backend finance app this is the
 single biggest data-loss risk in the codebase.
@@ -14,19 +14,19 @@ previews what a backup contains before applying it.
 
 ## Files to touch
 
-- [WinTheMoney/State/BackupManager.swift](WinTheMoney/State/BackupManager.swift) — rotation, listing, integrity.
-- [WinTheMoney/State/Store.swift](WinTheMoney/State/Store.swift) — `backupNow()` (~line 63), `autoBackupIfEnabled()`
+- [Nidhi/State/BackupManager.swift](Nidhi/State/BackupManager.swift) — rotation, listing, integrity.
+- [Nidhi/State/Store.swift](Nidhi/State/Store.swift) — `backupNow()` (~line 63), `autoBackupIfEnabled()`
   (~line 65), `restoreFromBackup` (~line 69), `exportBundle()`.
-- [WinTheMoney/UI/Sheets.swift](WinTheMoney/UI/Sheets.swift) — Settings backup section (~line 1160, the
+- [Nidhi/UI/Sheets.swift](Nidhi/UI/Sheets.swift) — Settings backup section (~line 1160, the
   `autoBackupEnabled` toggle area): add "Backups" list + restore preview UI.
-- [WinTheMoney/State/Persistence.swift](WinTheMoney/State/Persistence.swift) — read-only reference for decoding a
+- [Nidhi/State/Persistence.swift](Nidhi/State/Persistence.swift) — read-only reference for decoding a
   backup into `Persist` for the preview (decoding is tolerant; reuse it, don't duplicate).
 
 ## Implementation order
 
-1. **Rotation in `BackupManager`.** Keep the stable `WinTheMoney-backup.json` name (latest copy —
+1. **Rotation in `BackupManager`.** Keep the stable `Nidhi-backup.json` name (latest copy —
    existing restore paths and user muscle-memory depend on it), and additionally write
-   `Backups/WinTheMoney-backup-YYYYMMDD-HHmmss.json` in Documents (and in the iCloud container when
+   `Backups/Nidhi-backup-YYYYMMDD-HHmmss.json` in Documents (and in the iCloud container when
    available). After writing, prune to the newest 10 timestamped files per location.
 2. **Sanity gate before overwrite.** In `Store.autoBackupIfEnabled()` — it already checks `hasData`;
    strengthen it: decode the *existing* latest backup's counts (txns + banks + cards + goals) and skip
@@ -48,7 +48,7 @@ previews what a backup contains before applying it.
 
 ## Edge cases a weaker model would miss
 
-- **Auto-backup runs from `WinTheMoneyApp.swift:22` on launch** — that's exactly when a
+- **Auto-backup runs from `NidhiApp.swift:22` on launch** — that's exactly when a
   corrupted/emptied Persist would clobber the backup. The sanity gate (step 2) must run there, not only
   in Settings.
 - **Secrets are intentionally excluded from backups** (OAuth tokens, AA secret, PDF passwords —

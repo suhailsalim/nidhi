@@ -1,4 +1,4 @@
-# Nidhi (Win the Money) — feature docs
+# Nidhi — feature docs
 
 Per-area documentation. Start with [`../AGENTS.md`](../AGENTS.md) for build/architecture/conventions.
 

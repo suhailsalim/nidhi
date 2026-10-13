@@ -5,7 +5,7 @@
 All app data is a single JSON `Persist` blob in `UserDefaults` (key `win_the_money_v1`), written by
 `Store.save()` and read by `Store.load()`. Secrets are **not** here — they live in the Keychain
 (`Keychain.swift`, `StatementVault.swift`). Some flags use their own `UserDefaults` keys
-(`gmail_done_stmts`, `wtm_cat_lib_v`, `wtm_nw_day`, Gmail/AA settings).
+(`gmail_done_stmts`, `nidhi_cat_lib_v`, `nidhi_nw_day`, Gmail/AA settings).
 
 ## The tolerant-decoding rule (do not break)
 

@@ -9,7 +9,7 @@ Views (SwiftUI)  ⇄  Store (ObservableObject)  ⇄  Persistence (UserDefaults J
                          └─ derived totals computed on Store (net worth, spent, P&L…)
 ```
 
-`Store` (`WinTheMoney/State/Store.swift`) is the **single source of truth**. It owns every `@Published`
+`Store` (`Nidhi/State/Store.swift`) is the **single source of truth**. It owns every `@Published`
 collection, all mutations (add/update/remove/merge), and all derived values. Views are thin: they read
 published state and call `Store` methods. There is no separate view-model layer.
 
@@ -30,7 +30,7 @@ plus profile/settings (`userName, netWorthTarget, preferStatementImport, account
 - **Categories**: `baseCategories` (locked set), `ensureBaseCategories`, `symbolFor`, `migrateRentBills`.
 - **Merchant learning**: `merchantRules` (manual overrides), `learnMerchant`.
 - **Gamification**: XP/level, `milestones`, `badges`, `refreshMilestones`.
-- **Net worth history**: `nwHistory` sampled per day (`wtm_nw_day`).
+- **Net worth history**: `nwHistory` sampled per day (`nidhi_nw_day`).
 
 ## Models (`Models.swift`)
 
@@ -48,5 +48,5 @@ Plain `Codable` structs/enums: `BudgetCategory, Txn, TxnSource(.bank/.card/.unkn
 
 ## Background & platform
 
-`WinTheMoneyApp` injects `Store` and schedules `BGTask`s (`…gmailrefresh`, `…stmtrefresh`). See
+`NidhiApp` injects `Store` and schedules `BGTask`s (`…gmailrefresh`, `…stmtrefresh`). See
 [integrations.md](integrations.md) for Gmail/AA/notifications/widgets.

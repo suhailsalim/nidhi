@@ -9,8 +9,8 @@
 	</array>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
-		<string>com.suhail.WinTheMoney.gmailrefresh</string>
-		<string>com.suhail.WinTheMoney.stmtrefresh</string>
+		<string>com.suhail.Nidhi.gmailrefresh</string>
+		<string>com.suhail.Nidhi.stmtrefresh</string>
 	</array>
 	<key>UIFileSharingEnabled</key>
 	<true/>

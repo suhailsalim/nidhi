@@ -12,31 +12,31 @@ small interactive widget with 2-3 one-tap quick-log buttons for the user's most 
 
 ## Files to touch
 
-- **Create** `WinTheMoney/AppIntents.swift` — intents + `AppShortcutsProvider` (phrases: "Log ₹ in
+- **Create** `Nidhi/AppIntents.swift` — intents + `AppShortcutsProvider` (phrases: "Log ₹ in
   <app name>", "How's my budget in <app name>").
-- [WinTheMoney/State/Store.swift](WinTheMoney/State/Store.swift) / `Shared/` — intents run in extension processes
-  too; check how `WTMShared` (widget snapshot) is structured under `Shared/`. Writing a txn from an
+- [Nidhi/State/Store.swift](Nidhi/State/Store.swift) / `Shared/` — intents run in extension processes
+  too; check how `NidhiShared` (widget snapshot) is structured under `Shared/`. Writing a txn from an
   extension needs an **inbox** pattern: intents append to a shared-container JSON inbox; the app
   drains it into `Store` on foreground/background refresh. Do NOT try to instantiate `Store` (whole
   UserDefaults blob) inside the intent unless UserDefaults is already app-group-shared — check
   `Persistence.swift` for the suite used; if it's `.standard`, the inbox is mandatory.
-- [WinTheMoneyWidgets/WinTheMoneyWidgets.swift](WinTheMoneyWidgets/WinTheMoneyWidgets.swift) — a
+- [NidhiWidgets/NidhiWidgets.swift](NidhiWidgets/NidhiWidgets.swift) — a
   `QuickLogWidget` with `Button(intent:)` rows (amount presets per top cash categories).
-- `WinTheMoney/App/WinTheMoneyApp.swift` — drain the inbox on `scenePhase == .active`.
+- `Nidhi/App/NidhiApp.swift` — drain the inbox on `scenePhase == .active`.
 - Entitlements — an App Group for the shared container (both targets). **Gotcha:** free personal team —
   App Groups DO work on free teams (unlike iCloud); still verify `-allowProvisioningUpdates` succeeds.
 
 ## Implementation order
 
-1. Establish the app group + shared inbox file (`group.com.suhail.WinTheMoney/inbox.json`, an array of
+1. Establish the app group + shared inbox file (`group.com.suhail.Nidhi/inbox.json`, an array of
    pending txn DTOs, appended atomically with `NSFileCoordinator`).
 2. `LogTransactionIntent`: parameters amount (required), merchant (string, optional), category (an
    `AppEnum` built from the *default* category list — extensions can't read live Store categories
-   unless the snapshot exposes them; add category names to the `WTMShared` snapshot so the enum/
+   unless the snapshot exposes them; add category names to the `NidhiShared` snapshot so the enum/
    suggestions stay current).
 3. Drain-on-active in the app: run through `Store.classify` when merchant given, else the chosen
    category; source = manual; then `recomputeSpent()`.
-4. Budget/safe-to-spend read intents: answer from the `WTMShared` snapshot (already refreshed by the
+4. Budget/safe-to-spend read intents: answer from the `NidhiShared` snapshot (already refreshed by the
    app) — read-only, no Store needed. Return a spoken + visual snippet.
 5. `AppShortcutsProvider` phrases, then the interactive widget (iOS 17+ `Button(intent:)`).
 6. Test: Shortcuts app first (deterministic), then Siri voice, then widget taps; verify a quick-logged

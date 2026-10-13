@@ -15,11 +15,11 @@ balance sparkline (bank balances + known inflows − known outflows).
 
 ## Files to touch
 
-- **Create** `WinTheMoney/Forecast.swift` — pure `struct CashflowForecast { static func compute(...) }`
+- **Create** `Nidhi/Forecast.swift` — pure `struct CashflowForecast { static func compute(...) }`
   taking (banks, incomeStreams, upcomingCharges, cardDues, categories, txns, today) → daily projected
   balance array + safeToSpend. Pure and injectable-date so the parser-harness pattern can test it.
-- [WinTheMoney/State/Store.swift](WinTheMoney/State/Store.swift) — thin computed `var forecast` assembling inputs.
-- [WinTheMoney/UI/HomeView.swift](WinTheMoney/UI/HomeView.swift) — the card + breakdown sheet.
+- [Nidhi/State/Store.swift](Nidhi/State/Store.swift) — thin computed `var forecast` assembling inputs.
+- [Nidhi/UI/HomeView.swift](Nidhi/UI/HomeView.swift) — the card + breakdown sheet.
 
 ## Implementation order
 

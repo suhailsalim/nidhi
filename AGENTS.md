@@ -1,4 +1,4 @@
-# AGENTS.md — Nidhi (code name: Win the Money)
+# AGENTS.md — Nidhi
 
 Guidance for humans and AI coding agents working in this repo. Read this first; it exists to prevent
 re-deriving the architecture from scratch every session. Feature deep-dives live in [`docs/`](docs/).
@@ -13,14 +13,14 @@ A private, **on-device** SwiftUI personal-finance app for iOS 26 (₹/INR-first,
 ```bash
 # Build for simulator (the canonical command):
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
-  xcodebuild -project WinTheMoney.xcodeproj -scheme WinTheMoney \
-  -sdk iphonesimulator -destination "platform=iOS Simulator,id=$(cat /tmp/wtm_sim.txt)" \
+  xcodebuild -project Nidhi.xcodeproj -scheme Nidhi \
+  -sdk iphonesimulator -destination "platform=iOS Simulator,id=$(cat /tmp/nidhi_sim.txt)" \
   -derivedDataPath build/dd -allowProvisioningUpdates build 2>&1 \
   | grep -iE "error:|warning:|BUILD SUCCEEDED|BUILD FAILED"
 ```
 
-- `/tmp/wtm_sim.txt` holds a booted simulator UDID (or use `-destination 'platform=iOS Simulator,name=iPhone 16 Pro'`).
-- Free personal Apple team `WNU93FA79R`, bundle `com.suhail.WinTheMoney`.
+- `/tmp/nidhi_sim.txt` holds a booted simulator UDID (or use `-destination 'platform=iOS Simulator,name=iPhone 16 Pro'`).
+- Free personal Apple team `WNU93FA79R`, bundle `com.suhail.Nidhi`.
 - There is **no unit-test target.** Parsers are verified with an **offline PDFKit harness**: compile the
   real parser file(s) + `PDFTableReader.swift` + small stub model types + a `main.swift` with `swiftc`,
   then run it against a real PDF. See [`docs/statements-and-import.md`](docs/statements-and-import.md).
@@ -28,31 +28,31 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
 
 ## Architecture in one screen
 
-- **`Store` (`WinTheMoney/State/Store.swift`) is the single source of truth** — an `ObservableObject` holding
+- **`Store` (`Nidhi/State/Store.swift`) is the single source of truth** — an `ObservableObject` holding
   every `@Published` collection and all derived totals + mutations. Views are thin and read/write `Store`.
   Published state: `categories, txns, banks, cards, deposits, goals, milestones, badges, investments,`
   `incomeStreams, loans, merchantRules, fxRates, nwHistory`, plus settings/profile fields. The loans
   surface (net worth, EMI linking) lives in `Store+Loans.swift`; its amortisation maths is the pure,
   `Date()`-free `LoanMath.swift`.
-- **Models** (`WinTheMoney/State/Models.swift`): `BudgetCategory, Txn, TxnSource, BankAccount, CreditCard,`
+- **Models** (`Nidhi/State/Models.swift`): `BudgetCategory, Txn, TxnSource, BankAccount, CreditCard,`
   `Deposit, InvestmentKind, Investment, Goal/GoalStatus, Loan/LoanAdjustment, Milestone, Badge,`
   `IncomeStream, PlanMonth, Segment, Tab, Currencies`. Plain `Codable` structs.
-- **Persistence** (`WinTheMoney/State/Persistence.swift`): one `Persist` blob in UserDefaults; **tolerant**
+- **Persistence** (`Nidhi/State/Persistence.swift`): one `Persist` blob in UserDefaults; **tolerant**
   custom `init(from:)` per model. **RULE:** new stored properties must decode with a default — never
   let decoding throw. See the file header and [`docs/persistence-and-backup.md`](docs/persistence-and-backup.md).
 - **UI**: `RootView.swift` is a 6-tab `TabView` → `HomeView, PlanView, InsightsView, GoalsView,`
   `WealthView, IncomeView`. `AccountsView` manages banks/cards. `Sheets.swift` holds most add/edit
   sheets and Settings. `Components.swift` + `Theme.swift` (`Zen` palette) are the design system.
-- **Entry**: `WinTheMoneyApp.swift` (`@main`), injects `Store`, runs background tasks.
+- **Entry**: `NidhiApp.swift` (`@main`), injects `Store`, runs background tasks.
 
 ## File map (by folder)
 
-Sources live in folders under `WinTheMoney/` (the Xcode project uses file-system-synchronized
+Sources live in folders under `Nidhi/` (the Xcode project uses file-system-synchronized
 groups, so the folder tree IS the project structure — add/move files on disk and Xcode follows):
 
 | Folder | Contents |
 |--------|----------|
-| `App/` | `WinTheMoneyApp.swift` (@main), `RootView.swift` (6-tab TabView) |
+| `App/` | `NidhiApp.swift` (@main), `RootView.swift` (6-tab TabView) |
 | `State/` | `Store.swift` (single source of truth), `Models.swift`, `Persistence.swift`, `BackupManager.swift` |
 | `UI/` | Tab views (`HomeView/PlanView/InsightsView/GoalsView/WealthView/IncomeView.swift`), `AccountsView.swift`, `Sheets.swift` (add/edit sheets + Settings), `Components.swift` + `Theme.swift` (Zen design system), `BankSyncUI.swift`, `AIView.swift` |
 | `Statements/` | `StatementImporter.swift` (routing + OCR), `StatementParsers.swift` (bank), `CardStatementParser.swift` (cards), `PDFTableReader.swift`, `SpreadsheetImporter.swift`, `StatementVault.swift`, `StatementBackground.swift` |
@@ -65,10 +65,10 @@ groups, so the folder tree IS the project structure — add/move files on disk a
 | `Platform/` | `Keychain.swift`, `Notifications.swift`, `LiveActivity.swift` |
 | `Intents/` | `AppIntents.swift` (Siri read intents + phrases), `QuickLogStore.swift` (inbox drain into `Store`) |
 
-Top level: `Assets.xcassets` + `WinTheMoney.entitlements` stay at `WinTheMoney/` root (referenced by
+Top level: `Assets.xcassets` + `Nidhi.entitlements` stay at `Nidhi/` root (referenced by
 explicit path). `Shared/` (widget snapshot + `QuickLog.swift`, compiled into both targets — NOT a synchronized
-group, so a new file there needs a pbxproj entry) and `WinTheMoneyWidgets/` are separate targets;
-`Info.plist` / `WinTheMoneyWidgets-Info.plist` sit at repo root (pbxproj paths). Other repo dirs:
+group, so a new file there needs a pbxproj entry) and `NidhiWidgets/` are separate targets;
+`Info.plist` / `NidhiWidgets-Info.plist` sit at repo root (pbxproj paths). Other repo dirs:
 `docs/` (MkDocs: user guide + dev docs), `plans/` (execution plans, see `plans/README.md`),
 `design/` (icons + logo sources), `tools/parser-harness/fixtures/` (local-only real statement PDFs,
 gitignored), `.claude/skills/` (committed agent skills).
@@ -81,7 +81,7 @@ gitignored), `.claude/skills/` (committed agent skills).
   meant to be expanded; add entries rather than special-casing logic.
 - Quotes: Yahoo Finance for stocks/ETFs, AMFI for MFs, a public FX endpoint for currency. Free, no keys.
 - Networking is hand-rolled `URLSession`; OAuth/AA web flows use `ASWebAuthenticationSession` (anchor via
-  the shared `wtmPresentationAnchor()` in `GmailManager.swift`).
+  the shared `nidhiPresentationAnchor()` in `GmailManager.swift`).
 
 ## Gotchas (read before debugging these)
 
@@ -92,7 +92,7 @@ gitignored), `.claude/skills/` (committed agent skills).
   re-scan never re-imports (duplicates) or re-queues a pending PDF. Don't remove this guard.
 - **Import returns accounts even with 0 txns** (`StatementImporter.parse`) — needed so sparse statements
   still create the account.
-- **Category re-scan** runs once on a `wtm_cat_lib_v` bump and via Settings → "Re-scan categories";
+- **Category re-scan** runs once on a `nidhi_cat_lib_v` bump and via Settings → "Re-scan categories";
   it never overrides manual `merchantRules`.
 - **Benign console noise** to ignore: `nw_protocol_instance_set_output_handler … udp`, `CoreGraphics PDF
   has logged an error`, `<decode: bad range …>` — OS/PDFKit logs, not app bugs.

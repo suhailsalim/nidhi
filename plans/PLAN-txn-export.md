@@ -11,9 +11,9 @@ share sheet, plus a full-data export entry in Settings.
 
 ## Files to touch
 
-- **Create** `WinTheMoney/TxnExporter.swift` — pure functions `csv(_ txns:[Txn]) -> Data` and
+- **Create** `Nidhi/TxnExporter.swift` — pure functions `csv(_ txns:[Txn]) -> Data` and
   `json(_ txns:[Txn]) -> Data`.
-- [WinTheMoney/UI/Sheets.swift](WinTheMoney/UI/Sheets.swift) — export button (share icon) on
+- [Nidhi/UI/Sheets.swift](Nidhi/UI/Sheets.swift) — export button (share icon) on
   `TransactionsSheet`'s toolbar exporting *what's currently filtered*; Settings row "Export
   transactions (CSV)" exporting all.
 

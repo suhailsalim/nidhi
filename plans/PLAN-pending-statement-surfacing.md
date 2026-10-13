@@ -2,7 +2,7 @@
 
 **Rank: 3 of 5.** When Gmail auto-import finds a password-locked statement PDF that no vaulted password
 opens, it parks in `GmailManager.pending` and waits — visible ONLY under Settings → "Needs password"
-([Sheets.swift:1016](WinTheMoney/UI/Sheets.swift:1016) area). Real consequence already observed (memory +
+([Sheets.swift:1016](Nidhi/UI/Sheets.swift:1016) area). Real consequence already observed (memory +
 buglog): the Federal Bank account was never created because its locked statements sat pending unnoticed.
 Every downstream number (net worth, balances, Plan actuals) is silently wrong until the user stumbles
 into Settings. Small UI change, large data-completeness payoff.
@@ -14,15 +14,15 @@ deep-links to the password entry, and a local notification when a new pending it
 
 ## Files to touch
 
-- [WinTheMoney/Gmail/GmailManager.swift](WinTheMoney/Gmail/GmailManager.swift) — `pending` is `@Published` (~line
+- [Nidhi/Gmail/GmailManager.swift](Nidhi/Gmail/GmailManager.swift) — `pending` is `@Published` (~line
   30); `addPending` (~line 117 call site) is where a new pending item is born → notification hook here.
-- [WinTheMoney/UI/HomeView.swift](WinTheMoney/UI/HomeView.swift) — banner card.
-- [WinTheMoney/UI/AccountsView.swift](WinTheMoney/UI/AccountsView.swift) — banner/row.
-- [WinTheMoney/UI/Sheets.swift](WinTheMoney/UI/Sheets.swift) — the existing "Needs password" UI (~1016);
+- [Nidhi/UI/HomeView.swift](Nidhi/UI/HomeView.swift) — banner card.
+- [Nidhi/UI/AccountsView.swift](Nidhi/UI/AccountsView.swift) — banner/row.
+- [Nidhi/UI/Sheets.swift](Nidhi/UI/Sheets.swift) — the existing "Needs password" UI (~1016);
   extract or expose it so it can be presented as a sheet from Home/Accounts (reuse, don't duplicate).
-- [WinTheMoney/Platform/Notifications.swift](WinTheMoney/Platform/Notifications.swift) — one new local-notification helper,
+- [Nidhi/Platform/Notifications.swift](Nidhi/Platform/Notifications.swift) — one new local-notification helper,
   following the existing pattern (check `setEnabled` gating).
-- [WinTheMoney/UI/Components.swift](WinTheMoney/UI/Components.swift) — only if a suitable banner component
+- [Nidhi/UI/Components.swift](Nidhi/UI/Components.swift) — only if a suitable banner component
   doesn't already exist; check first (the design-system rule: reuse `Components.swift`).
 
 ## Implementation order

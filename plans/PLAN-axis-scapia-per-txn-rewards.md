@@ -18,7 +18,7 @@ the fixtures; if not, Scapia is out of scope, note it and stop there).
 
 ## Files to touch
 
-- [WinTheMoney/Statements/CardStatementParser.swift](WinTheMoney/Statements/CardStatementParser.swift) — `parseAxis`
+- [Nidhi/Statements/CardStatementParser.swift](Nidhi/Statements/CardStatementParser.swift) — `parseAxis`
   (lines ~121-192). Reward unit already exists: `rewardUnit(.axis)` → "EDGE Miles" (~line 323).
 - `tools/parser-harness/expectations.json` — re-record after the change (`--record`), diff by hand.
 - [docs/statements-and-import.md](docs/statements-and-import.md) — one line updating reward coverage.
