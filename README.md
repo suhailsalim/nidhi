@@ -2,7 +2,7 @@
 
 *(formerly "Nidhi" — code names, targets and bundle id keep the old name)*
 
-**[Website](https://suhailsalim.github.io/win-the-money/)** · **[Docs](https://suhailsalim.github.io/win-the-money/docs/)**
+**[Website](https://suhailsalim.github.io/nidhi/)** · **[Docs](https://suhailsalim.github.io/nidhi/docs/)**
 *(site not yet published — see [`plans/PLAN-website.md`](plans/PLAN-website.md) for status)*
 
 A private, on-device personal-finance tracker for iOS — built in SwiftUI for Indian banking
