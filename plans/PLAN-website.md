@@ -53,7 +53,7 @@ truthfully, because that's the app's core selling point.
 ## Edge cases a weaker model would miss
 
 - **Repo name/URL**: confirm the actual GitHub remote (`git remote -v`) before hardcoding Pages URLs;
-  `mkdocs.yml` currently guesses `suhailsalim/win-the-money`.
+  `mkdocs.yml` currently guesses `suhailsalim/nidhi`.
 - **`site/` is gitignored** — the workflow builds into `_site/` in CI; never commit build output.
 - **No real data anywhere**: screenshots must come from a demo-seeded simulator; audit every image for
   masked-but-real account numbers before committing.

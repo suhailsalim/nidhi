@@ -5,9 +5,9 @@ site_name: Nidhi
 site_description: A private, on-device personal-finance app for iOS — INR-first, no backend, no analytics.
 # Served at /docs/ alongside the static landing page at the site root (see website/ + .github/workflows/site.yml).
 # Update this if GitHub Pages is ever enabled with a different source/URL.
-site_url: https://suhailsalim.github.io/win-the-money/docs/
-repo_url: https://github.com/suhailsalim/win-the-money
-repo_name: win-the-money
+site_url: https://suhailsalim.github.io/nidhi/docs/
+repo_url: https://github.com/suhailsalim/nidhi
+repo_name: nidhi
 docs_dir: docs
 
 theme:
