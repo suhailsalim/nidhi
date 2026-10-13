@@ -51,7 +51,7 @@ struct QuickLogEntry: Codable, Identifiable, Hashable, Sendable {
 
 // MARK: Inbox (shared container, cross-process safe)
 enum QuickLogInbox {
-    static var url: URL { WTMShared.containerURL.appendingPathComponent("quicklog_inbox.json") }
+    static var url: URL { NidhiShared.containerURL.appendingPathComponent("quicklog_inbox.json") }
 
     /// Serialises appends/drains happening on several threads *within* one process; NSFileCoordinator
     /// handles the app ↔ widget-extension case.
@@ -99,7 +99,7 @@ enum QuickLogInbox {
     // Darwin notifications are the only cross-process signal available to an iOS app extension.
     // It's an optimisation, not the contract: if the app isn't running the drain still happens on
     // the next `scenePhase == .active`.
-    static let darwinName = "com.suhail.WinTheMoney.quicklog" as CFString
+    static let darwinName = "com.suhail.Nidhi.quicklog" as CFString
 
     static func notifyApp() {
         CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(),
@@ -118,14 +118,14 @@ enum QuickLogInbox {
 }
 
 // MARK: - Snapshot pieces the intents/widget read (written by the app on every save)
-struct WTMCatSnap: Codable, Hashable, Sendable {
+struct NidhiCatSnap: Codable, Hashable, Sendable {
     var name: String
     var spent: Double
     var plan: Double          // normalised to a per-month figure
     var symbol: String
 }
 
-struct WTMQuickPreset: Codable, Hashable, Identifiable, Sendable {
+struct NidhiQuickPreset: Codable, Hashable, Identifiable, Sendable {
     var amount: Double
     var category: String
     var label: String         // merchant/label used for the logged txn
@@ -133,14 +133,14 @@ struct WTMQuickPreset: Codable, Hashable, Identifiable, Sendable {
     var id: String { "\(label)-\(category)-\(amount)" }
 
     /// Shown before there's enough history to derive real presets. Amounts only — no fabricated figures.
-    static let defaults: [WTMQuickPreset] = [
-        WTMQuickPreset(amount: 100, category: "", label: "Cash spend", symbol: "indianrupeesign.circle"),
-        WTMQuickPreset(amount: 250, category: "", label: "Cash spend", symbol: "indianrupeesign.circle"),
-        WTMQuickPreset(amount: 500, category: "", label: "Cash spend", symbol: "indianrupeesign.circle"),
+    static let defaults: [NidhiQuickPreset] = [
+        NidhiQuickPreset(amount: 100, category: "", label: "Cash spend", symbol: "indianrupeesign.circle"),
+        NidhiQuickPreset(amount: 250, category: "", label: "Cash spend", symbol: "indianrupeesign.circle"),
+        NidhiQuickPreset(amount: 500, category: "", label: "Cash spend", symbol: "indianrupeesign.circle"),
     ]
 }
 
-extension WTMSnapshot {
+extension NidhiSnapshot {
     // Tolerant decode: `cats`/`quickPresets` were added after the first snapshots shipped, and the
     // synthesised Codable init throws on a missing key even for properties with defaults. Without
     // this every widget would fall back to `.placeholder` until the app next saved.
@@ -169,7 +169,7 @@ extension WTMSnapshot {
     /// Optimistic bump so an interactive-widget tap moves the budget bar immediately. The app
     /// reconciles the true figure on its next `save()` (drain → recomputeSpent → publishSnapshot).
     static func applyOptimisticSpend(_ amount: Double, category: String?) {
-        var s = WTMSnapshot.load()
+        var s = NidhiSnapshot.load()
         guard s.hasRealData else { return }
         s.spent += amount
         if let c = category, let i = s.cats.firstIndex(where: { $0.name.caseInsensitiveCompare(c) == .orderedSame }) {
@@ -181,7 +181,7 @@ extension WTMSnapshot {
 
 // MARK: - Formatting
 enum QuickLogFormat {
-    /// Exact ₹ with Indian digit grouping — confirmations must not round the way `WTMShared.inr` does.
+    /// Exact ₹ with Indian digit grouping — confirmations must not round the way `NidhiShared.inr` does.
     static func rupees(_ v: Double) -> String {
         let f = NumberFormatter()
         f.numberStyle = .decimal
@@ -196,7 +196,7 @@ enum QuickLogFormat {
 // A String parameter + DynamicOptionsProvider reading the shared snapshot always matches the app.
 struct QuickLogCategoryOptions: DynamicOptionsProvider {
     func results() async throws -> [String] {
-        let names = WTMSnapshot.load().cats.map(\.name)
+        let names = NidhiSnapshot.load().cats.map(\.name)
         return names.isEmpty ? ["Food", "Transport", "Shopping", "Bills", "Health", "Other"] : names
     }
 }
@@ -244,7 +244,7 @@ struct LogTransactionIntent: AppIntent {
         let cat = category?.trimmingCharacters(in: .whitespacesAndNewlines)
         QuickLogInbox.append(QuickLogEntry(amount: amt, merchant: name,
                                            category: (cat?.isEmpty ?? true) ? nil : cat))
-        WTMSnapshot.applyOptimisticSpend(amt, category: cat)
+        NidhiSnapshot.applyOptimisticSpend(amt, category: cat)
         WidgetCenter.shared.reloadAllTimelines()
 
         var where_ = ""

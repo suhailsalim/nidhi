@@ -37,7 +37,7 @@ no longer match this list.
   section. Persistence independently round-trip verified. **EMI auto-linking is unexercised at runtime.**
 
 - [PLAN-app-intents-quick-log.md](PLAN-app-intents-quick-log.md) — Siri/Shortcuts quick logging +
-  interactive widget. Reading figures aloud is off by default (`wtm_siri_read_figures`). Intent
+  interactive widget. Reading figures aloud is off by default (`nidhi_siri_read_figures`). Intent
   drain/dedup was driven on the simulator; **Siri voice and the widget itself are unexercised**.
 - [PLAN-monthly-report.md](PLAN-monthly-report.md) — pure `MonthReport` builder (injected date) +
   share card carrying figures only, no accounts or balances. **The rendered image is unreviewed.**
@@ -62,7 +62,7 @@ no longer match this list.
 - [PLAN-card-due-reminders.md](PLAN-card-due-reminders.md) — card due dates + T-3/due-day reminders (#17).
 - [PLAN-pending-statement-surfacing.md](PLAN-pending-statement-surfacing.md) — Home + Accounts banners
   reusing `StatementsEmailView`, plus the local notification (#18). Fully shipped: the notification
-  fires from the scan loop ([GmailManager.swift:123](../WinTheMoney/Gmail/GmailManager.swift)) when the
+  fires from the scan loop ([GmailManager.swift:123](../Nidhi/Gmail/GmailManager.swift)) when the
   pending count grows, so it's one per scan and never fires on launch rehydration.
 </content>
 </invoke>

@@ -12,12 +12,12 @@ range, international-only, needs-review).
 
 ## Files to touch
 
-- [WinTheMoney/State/Store.swift](WinTheMoney/State/Store.swift) — `func searchTxns(_ query: String, filter:
+- [Nidhi/State/Store.swift](Nidhi/State/Store.swift) — `func searchTxns(_ query: String, filter:
   TxnFilter) -> [Txn]` + a `TxnFilter` struct (all fields optional). Pure, no state.
-- [WinTheMoney/UI/Sheets.swift](WinTheMoney/UI/Sheets.swift) — `TransactionsSheet`: add `.searchable`,
+- [Nidhi/UI/Sheets.swift](Nidhi/UI/Sheets.swift) — `TransactionsSheet`: add `.searchable`,
   filter chip bar, and migrate its existing account/category/tag presets to be initial `TxnFilter`
   values (the preset init from PR #11 must keep working unchanged for existing call sites).
-- [WinTheMoney/UI/HomeView.swift](WinTheMoney/UI/HomeView.swift) — a search icon opening the full list.
+- [Nidhi/UI/HomeView.swift](Nidhi/UI/HomeView.swift) — a search icon opening the full list.
 
 ## Implementation order
 

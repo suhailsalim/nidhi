@@ -11,13 +11,13 @@ overlay in the app switcher, and optional per-launch vs on-background-timeout lo
 
 ## Files to touch
 
-- **Create** `WinTheMoney/AppLock.swift` — `ObservableObject { isLocked, unlock() }` wrapping
+- **Create** `Nidhi/AppLock.swift` — `ObservableObject { isLocked, unlock() }` wrapping
   `LAContext.evaluatePolicy(.deviceOwnerAuthentication, …)`.
-- [WinTheMoney/App/WinTheMoneyApp.swift](WinTheMoney/App/WinTheMoneyApp.swift) — overlay a lock screen over
+- [Nidhi/App/NidhiApp.swift](Nidhi/App/NidhiApp.swift) — overlay a lock screen over
   `RootView` when locked; observe `scenePhase` to lock on background and blur in the switcher.
-- [WinTheMoney/UI/Sheets.swift](WinTheMoney/UI/Sheets.swift) — Settings: "App lock" toggle + "Require after"
-  picker (immediately / 1 min / 5 min). Settings via `UserDefaults` keys (`wtm_lock_on`,
-  `wtm_lock_grace`), not the Persist blob (a lock setting must survive/act independent of data restore).
+- [Nidhi/UI/Sheets.swift](Nidhi/UI/Sheets.swift) — Settings: "App lock" toggle + "Require after"
+  picker (immediately / 1 min / 5 min). Settings via `UserDefaults` keys (`nidhi_lock_on`,
+  `nidhi_lock_grace`), not the Persist blob (a lock setting must survive/act independent of data restore).
 - `Info.plist` — `NSFaceIDUsageDescription`.
 
 ## Implementation order

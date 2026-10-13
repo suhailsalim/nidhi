@@ -14,13 +14,13 @@ percentages and spend totals only).
 
 ## Files to touch
 
-- **Create** `WinTheMoney/MonthReport.swift` — pure `struct MonthReport { static func build(month:,
+- **Create** `Nidhi/MonthReport.swift` — pure `struct MonthReport { static func build(month:,
   store-inputs...) -> MonthReport }` with all figures as fields; and `MonthReportView`.
-- [WinTheMoney/UI/InsightsView.swift](WinTheMoney/UI/InsightsView.swift) — entry row ("June in review →"),
+- [Nidhi/UI/InsightsView.swift](Nidhi/UI/InsightsView.swift) — entry row ("June in review →"),
   month picker for past months.
-- [WinTheMoney/UI/HomeView.swift](WinTheMoney/UI/HomeView.swift) — for the first 5 days of a month, a
+- [Nidhi/UI/HomeView.swift](Nidhi/UI/HomeView.swift) — for the first 5 days of a month, a
   one-tap banner to last month's report.
-- [WinTheMoney/AI/AIInsights.swift](WinTheMoney/AI/AIInsights.swift) — optional: reuse the existing
+- [Nidhi/AI/AIInsights.swift](Nidhi/AI/AIInsights.swift) — optional: reuse the existing
   aggregate-only summary for a closing paragraph when AI is enabled (respect the privacy rule — the
   report builder passes the same aggregates `AIInsights` already uses, nothing more).
 

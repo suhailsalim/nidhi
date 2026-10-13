@@ -13,15 +13,15 @@ amount, show an "Upcoming" section (Home + Insights) with a monthly-burn total, 
 
 ## Files to touch
 
-- [WinTheMoney/State/Store.swift](WinTheMoney/State/Store.swift) — extend `RecurringGroup` with
+- [Nidhi/State/Store.swift](Nidhi/State/Store.swift) — extend `RecurringGroup` with
   `cadence`, `nextDate`, `expectedAmount`, `confidence`; add `upcomingCharges(within:)`. Add a
   persisted `mutedRecurringKeys: Set<String>` on Store.
-- [WinTheMoney/State/Persistence.swift](WinTheMoney/State/Persistence.swift) — decode `mutedRecurringKeys`
+- [Nidhi/State/Persistence.swift](Nidhi/State/Persistence.swift) — decode `mutedRecurringKeys`
   default `[]` (tolerant rule).
-- [WinTheMoney/UI/HomeView.swift](WinTheMoney/UI/HomeView.swift) — "Upcoming" card (next 7 days).
-- [WinTheMoney/UI/InsightsView.swift](WinTheMoney/UI/InsightsView.swift) — subscriptions card: monthly burn
+- [Nidhi/UI/HomeView.swift](Nidhi/UI/HomeView.swift) — "Upcoming" card (next 7 days).
+- [Nidhi/UI/InsightsView.swift](Nidhi/UI/InsightsView.swift) — subscriptions card: monthly burn
   + list with cadence, next date, mute swipe.
-- [WinTheMoney/Platform/Notifications.swift](WinTheMoney/Platform/Notifications.swift) — `recurring-<key>` reminders,
+- [Nidhi/Platform/Notifications.swift](Nidhi/Platform/Notifications.swift) — `recurring-<key>` reminders,
   rescheduled whenever recompute changes predictions.
 
 ## Implementation order

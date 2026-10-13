@@ -13,19 +13,19 @@ transaction clears the reminder.
 
 ## Files to touch
 
-- [WinTheMoney/State/Models.swift](WinTheMoney/State/Models.swift) — `CreditCard`: add `totalDue`, `minDue`,
+- [Nidhi/State/Models.swift](Nidhi/State/Models.swift) — `CreditCard`: add `totalDue`, `minDue`,
   `dueDate`, `dueClearedAt` (all optional).
-- [WinTheMoney/State/Persistence.swift](WinTheMoney/State/Persistence.swift) — tolerant decode lines (defaults nil)
+- [Nidhi/State/Persistence.swift](Nidhi/State/Persistence.swift) — tolerant decode lines (defaults nil)
   — **mandatory**, see the rule in docs/persistence-and-backup.md.
-- [WinTheMoney/AccountAggregator/BankSync.swift](WinTheMoney/AccountAggregator/BankSync.swift) — `SyncedAccount`: carry the three fields.
-- [WinTheMoney/Statements/CardStatementParser.swift](WinTheMoney/Statements/CardStatementParser.swift) — extract per issuer
+- [Nidhi/AccountAggregator/BankSync.swift](Nidhi/AccountAggregator/BankSync.swift) — `SyncedAccount`: carry the three fields.
+- [Nidhi/Statements/CardStatementParser.swift](Nidhi/Statements/CardStatementParser.swift) — extract per issuer
   in each parser + thread through `cardAccount(...)` (~line 284).
-- [WinTheMoney/State/Store.swift](WinTheMoney/State/Store.swift) — `upsertAccount`: write to the card (only when
+- [Nidhi/State/Store.swift](Nidhi/State/Store.swift) — `upsertAccount`: write to the card (only when
   the statement is *newer* than the current `dueDate`); clear when a Transfer-classified payment ≥
   `minDue` to that card lands after the statement date.
-- [WinTheMoney/Platform/Notifications.swift](WinTheMoney/Platform/Notifications.swift) — schedule/cancel
+- [Nidhi/Platform/Notifications.swift](Nidhi/Platform/Notifications.swift) — schedule/cancel
   `UNCalendarNotificationTrigger`s (T-3 days and due-day morning), id `carddue-<mask>`.
-- [WinTheMoney/UI/AccountsView.swift](WinTheMoney/UI/AccountsView.swift) + Home — due chip on card cover;
+- [Nidhi/UI/AccountsView.swift](Nidhi/UI/AccountsView.swift) + Home — due chip on card cover;
   Home banner when any card is due within 5 days and uncleared.
 
 ## Implementation order

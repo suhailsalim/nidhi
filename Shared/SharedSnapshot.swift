@@ -3,9 +3,9 @@ import ActivityKit
 
 // Shared between the app and the widget/Live-Activity extension.
 
-enum WTMShared {
-    static let appGroup = "group.com.suhail.WinTheMoney"
-    static let snapshotKey = "wtm_snapshot_v1"
+enum NidhiShared {
+    static let appGroup = "group.com.suhail.Nidhi"
+    static let snapshotKey = "nidhi_snapshot_v1"
 
     /// File-based shared storage. Uses the App Group container when available (so the widget
     /// can read it) and falls back to the app's Documents dir otherwise. Avoids
@@ -32,7 +32,7 @@ enum WTMShared {
 }
 
 /// Snapshot the app writes to the App Group on every save; widgets read it.
-struct WTMSnapshot: Codable {
+struct NidhiSnapshot: Codable {
     var netWorth: Double
     var netWorthChange: Double
     var spent: Double
@@ -46,25 +46,25 @@ struct WTMSnapshot: Codable {
     var updated: Date
     // Added for App Intents (Siri / Shortcuts / interactive widget). Decoded tolerantly in
     // QuickLog.swift so a snapshot written by an older build still loads.
-    var cats: [WTMCatSnap] = []            // per-category spend vs cap, for CheckBudgetIntent + Siri options
-    var quickPresets: [WTMQuickPreset] = [] // widget one-tap buttons, derived from real cash spends
+    var cats: [NidhiCatSnap] = []            // per-category spend vs cap, for CheckBudgetIntent + Siri options
+    var quickPresets: [NidhiQuickPreset] = [] // widget one-tap buttons, derived from real cash spends
 
     var planPct: Double { plan > 0 ? min(1, spent/plan) : 0 }
     var goalPct: Double { topGoalTarget > 0 ? min(1, topGoalSaved/topGoalTarget) : 0 }
 
     /// Empty placeholder — never show fabricated figures (used before any real data exists).
-    static let placeholder = WTMSnapshot(
+    static let placeholder = NidhiSnapshot(
         netWorth: 0, netWorthChange: 0, spent: 0, plan: 0,
         targetPct: 0, topGoalTitle: "No goal yet", topGoalSaved: 0, topGoalTarget: 1,
         streakMonths: 0, nwHistory: [], updated: Date(timeIntervalSince1970: 0))
 
-    static func load() -> WTMSnapshot {
-        guard let d = try? Data(contentsOf: WTMShared.snapshotURL),
-              let s = try? JSONDecoder().decode(WTMSnapshot.self, from: d) else { return .placeholder }
+    static func load() -> NidhiSnapshot {
+        guard let d = try? Data(contentsOf: NidhiShared.snapshotURL),
+              let s = try? JSONDecoder().decode(NidhiSnapshot.self, from: d) else { return .placeholder }
         return s
     }
     func save() {
-        if let d = try? JSONEncoder().encode(self) { try? d.write(to: WTMShared.snapshotURL, options: .atomic) }
+        if let d = try? JSONEncoder().encode(self) { try? d.write(to: NidhiShared.snapshotURL, options: .atomic) }
     }
 }
 

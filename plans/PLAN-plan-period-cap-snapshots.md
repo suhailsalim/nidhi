@@ -14,14 +14,14 @@ never rewrites history.
 
 ## Files to touch
 
-- [WinTheMoney/State/Models.swift](WinTheMoney/State/Models.swift) — `BudgetCategory` (fields around line 46:
+- [Nidhi/State/Models.swift](Nidhi/State/Models.swift) — `BudgetCategory` (fields around line 46:
   `periodMonths`, `monthlyPlan`): add `capHistory: [String: Double] = [:]` and a helper
   `plan(forMonth:)`.
-- [WinTheMoney/State/Persistence.swift](WinTheMoney/State/Persistence.swift) — tolerant decode line:
+- [Nidhi/State/Persistence.swift](Nidhi/State/Persistence.swift) — tolerant decode line:
   `capHistory = c.decode(.capHistory, default: [:])` (**mandatory** — see CLAUDE.md rule).
-- [WinTheMoney/State/Store.swift](WinTheMoney/State/Store.swift) — snapshot writer; `recomputeSpent()` (~278) is the
+- [Nidhi/State/Store.swift](Nidhi/State/Store.swift) — snapshot writer; `recomputeSpent()` (~278) is the
   natural hook since it already runs on every mutation path. `planMonths` (~320) switches to snapshots.
-- [WinTheMoney/UI/PlanView.swift](WinTheMoney/UI/PlanView.swift) — `plan(c)` override for non-current windows
+- [Nidhi/UI/PlanView.swift](Nidhi/UI/PlanView.swift) — `plan(c)` override for non-current windows
   (~line 170 `CategoryRow(... planOverride: plan(c) ...)` and `window(mode:offset:)` at ~193).
 
 ## Implementation order
@@ -60,7 +60,7 @@ never rewrites history.
 - **`monthKey` must be locale/timezone-stable**: build it with `Calendar.current` year/month ints
   (`String(format: "%04d-%02d", y, m)`), not `DateFormatter` with default locale.
 - **Widgets/snapshot**: `planMonths` feeds the home trend; after changing it, confirm the widget
-  snapshot path (`WTMShared.snapshotURL`, Store.swift:~1259 region) still compiles/renders.
+  snapshot path (`NidhiShared.snapshotURL`, Store.swift:~1259 region) still compiles/renders.
 - Persistence: forgetting the tolerant-decode default will make ALL existing user data fail to load —
   this is the #1 repo rule. Double-check the decode line exists before building.
 

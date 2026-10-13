@@ -16,7 +16,7 @@ truthfully, because that's the app's core selling point.
 ## Files to touch
 
 - **Create** `website/index.html` — a single self-contained landing page (inline CSS, no JS frameworks,
-  no CDN fonts — system font stack; matches the `Zen` palette from `WinTheMoney/UI/Theme.swift`; read that
+  no CDN fonts — system font stack; matches the `Zen` palette from `Nidhi/UI/Theme.swift`; read that
   file and reuse its hex colours).
 - **Create** `website/screenshots/` — placeholder frames now; real simulator screenshots later
   (capture with `xcrun simctl io booted screenshot`; NEVER screenshots containing real financial data —
@@ -29,7 +29,7 @@ truthfully, because that's the app's core selling point.
 
 ## Implementation order
 
-1. Read `WinTheMoney/UI/Theme.swift` for the Zen palette hex values and typography feel.
+1. Read `Nidhi/UI/Theme.swift` for the Zen palette hex values and typography feel.
 2. Build `website/index.html`. Sections, in order:
    - Hero: app name + one-liner ("Your money, entirely on your device") + privacy badges
      (No backend · No analytics · Open source).

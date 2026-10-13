@@ -20,15 +20,15 @@ heavy lifting.
 
 ## Files to touch
 
-- **Create** `WinTheMoney/CloudSync.swift` — CKContainer private DB; one record type `WTMChangeSet`
+- **Create** `Nidhi/CloudSync.swift` — CKContainer private DB; one record type `NidhiChangeSet`
   (device id, timestamp, zlib-compressed JSON payload) in a custom zone with `CKSyncEngine` (iOS 17+)
   handling push/fetch scheduling.
-- [WinTheMoney/State/Store.swift](WinTheMoney/State/Store.swift) — `mergeRemote(_ persist: Persist)`: a
+- [Nidhi/State/Store.swift](Nidhi/State/Store.swift) — `mergeRemote(_ persist: Persist)`: a
   collection-aware merge (see below); a `dirty` flag piggybacking on `save()`.
-- [WinTheMoney/State/Persistence.swift](WinTheMoney/State/Persistence.swift) — reuse `Persist` encoding for the
+- [Nidhi/State/Persistence.swift](Nidhi/State/Persistence.swift) — reuse `Persist` encoding for the
   payload; add per-record `updatedAt` ONLY where merge needs it (txns already have dates + externalIds;
   accounts have anchors with asOf — most merge keys already exist).
-- [WinTheMoney/UI/Sheets.swift](WinTheMoney/UI/Sheets.swift) — Settings "Sync across devices" toggle +
+- [Nidhi/UI/Sheets.swift](Nidhi/UI/Sheets.swift) — Settings "Sync across devices" toggle +
   status row; entitlements for both configurations.
 
 ## Implementation order

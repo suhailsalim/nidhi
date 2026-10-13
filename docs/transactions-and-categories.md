@@ -43,4 +43,4 @@ CGST / SGST / IGST / UTGST, CBIC epayments, and ICEGATE / customs duty).
 
 Re-runs the library over existing transactions, updating category + tags **only where the library matches**
 and **never** overriding manual `merchantRules`, transfers, or income. Runs once automatically when the
-`wtm_cat_lib_v` version bumps, and on demand via **Settings → Re-scan categories**.
+`nidhi_cat_lib_v` version bumps, and on demand via **Settings → Re-scan categories**.

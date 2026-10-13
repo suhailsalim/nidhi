@@ -5,7 +5,7 @@ All integrations are opt-in and run on-device. Secrets live in the Keychain (`Ke
 ## Gmail (read-only) — `GmailManager.swift`, `GmailProvider.swift`, `GmailBackground.swift`
 
 - OAuth 2.0 + **PKCE**, scope `gmail.readonly`. Public iOS client id from `Info.plist` (`GIDClientID`);
-  no client secret. The web step uses `ASWebAuthenticationSession` (anchor: `wtmPresentationAnchor()`).
+  no client secret. The web step uses `ASWebAuthenticationSession` (anchor: `nidhiPresentationAnchor()`).
   Tokens are stored in the Keychain.
 - **Two scans**: transaction-alert emails (`EmailTransactionParser.swift`) and statement-PDF attachments
   (routed through `StatementImporter`). Background refresh via `BGTask` (`…gmailrefresh`, `…stmtrefresh`).
@@ -86,5 +86,5 @@ source of the INR value).
 ## Device
 
 - `Notifications.swift` — local notifications (`notificationsEnabled`).
-- `LiveActivity.swift` + `WinTheMoneyWidgets/` — widgets / Live Activity surfaces.
-- `WinTheMoneyApp.swift` — registers BG tasks and injects `Store`.
+- `LiveActivity.swift` + `NidhiWidgets/` — widgets / Live Activity surfaces.
+- `NidhiApp.swift` — registers BG tasks and injects `Store`.

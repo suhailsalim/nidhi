@@ -29,7 +29,7 @@ Creating a second `Store` there would read nothing and could write a stale blob 
 ## The inbox
 
 `LogTransactionIntent` therefore appends a `QuickLogEntry` (uuid, amount, merchant, category, date)
-to `quicklog_inbox.json` in the App Group container (`group.com.suhail.WinTheMoney`), guarded by
+to `quicklog_inbox.json` in the App Group container (`group.com.suhail.Nidhi`), guarded by
 `NSFileCoordinator` so the app and the extension can't interleave a read-modify-write.
 
 `Store.drainQuickLogInbox()` (called on `scenePhase == .active`, and on a Darwin notification when
@@ -43,7 +43,7 @@ dedupes through the existing externalId guard.
 
 ## Snapshot fields
 
-`WTMSnapshot` (written on every `Store.save()`) carries two extra payloads for code that can't see
+`NidhiSnapshot` (written on every `Store.save()`) carries two extra payloads for code that can't see
 `Store`:
 
 - `cats` — per-category name/spent/plan/symbol: powers `CheckBudgetIntent` and the **dynamic**
@@ -66,15 +66,15 @@ tap; the app reconciles the true figure when it next drains and saves.
 
 Read intents are **off by default** — Siri answers before the Face ID app lock, so anyone holding the
 phone could otherwise hear balances. Settings → *Siri & Shortcuts* → "Let Siri read my figures"
-(`wtm_siri_read_figures` in `UserDefaults`, not part of the persisted blob). Logging a spend is
+(`nidhi_siri_read_figures` in `UserDefaults`, not part of the persisted blob). Logging a spend is
 always allowed; it reveals nothing.
 
 ## Files
 
 - `Shared/QuickLog.swift` — inbox, DTO, `LogTransactionIntent`, dynamic options, snapshot decode
   (compiled into **both** targets; it's the only intent the widget needs).
-- `WinTheMoney/Intents/AppIntents.swift` — read intents, snippet view, `AppShortcutsProvider`,
+- `Nidhi/Intents/AppIntents.swift` — read intents, snippet view, `AppShortcutsProvider`,
   Settings section.
-- `WinTheMoney/Intents/QuickLogStore.swift` — `Store.drainQuickLogInbox()`, snapshot payloads,
+- `Nidhi/Intents/QuickLogStore.swift` — `Store.drainQuickLogInbox()`, snapshot payloads,
   `SiriPrivacy`.
-- `WinTheMoneyWidgets/QuickLogWidget.swift` — the interactive widget.
+- `NidhiWidgets/QuickLogWidget.swift` — the interactive widget.

@@ -1,4 +1,4 @@
-# Contributing to Win the Money
+# Contributing to Nidhi
 
 Thanks for your interest! This is a SwiftUI / iOS 26 app with **no third-party dependencies**.
 
@@ -13,7 +13,7 @@ Thanks for your interest! This is a SwiftUI / iOS 26 app with **no third-party d
 
 - **No new third-party dependencies** without discussion — the app is intentionally self-contained.
 - **Persistence is forward/backward compatible.** When you add a stored property, follow the rule in
-  [`docs/persistence-and-backup.md`](docs/persistence-and-backup.md) and `WinTheMoney/State/Persistence.swift`
+  [`docs/persistence-and-backup.md`](docs/persistence-and-backup.md) and `Nidhi/State/Persistence.swift`
   (every field decodes with a default — never let decoding throw on a missing key).
 - **Keep `Store` the single source of truth.** Views are thin; derived values are computed on `Store`.
 - **Match the surrounding style** — comment density, naming, INR formatting, and `Zen` colours.
@@ -24,9 +24,9 @@ Thanks for your interest! This is a SwiftUI / iOS 26 app with **no third-party d
 - **New statement parsers** for banks/cards not yet supported. See
   [`docs/statements-and-import.md`](docs/statements-and-import.md) for the parser pattern and the
   offline PDFKit test-harness approach. Please verify against a real (redacted) statement.
-- **Merchant catalog entries** — add `BrandRule`s in `WinTheMoney/Catalogs/BrandCatalog.swift`
+- **Merchant catalog entries** — add `BrandRule`s in `Nidhi/Catalogs/BrandCatalog.swift`
   (see [`docs/transactions-and-categories.md`](docs/transactions-and-categories.md)).
-- **Bank/card catalog** entries in `WinTheMoney/Catalogs/BankCatalog.swift` / `CardCatalog.swift`.
+- **Bank/card catalog** entries in `Nidhi/Catalogs/BankCatalog.swift` / `CardCatalog.swift`.
 
 ## Pull requests
 

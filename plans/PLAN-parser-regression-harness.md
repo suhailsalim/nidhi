@@ -4,7 +4,7 @@
 hand-rebuilding a throwaway `swiftc` harness. The buglog (`.wolf/buglog.json`, 42 entries) is dominated
 by parser and balance regressions. A permanent, one-command harness protects all future work, including
 the other four plans. It also lands the currently-uncommitted, already-verified fix in
-`WinTheMoney/Statements/CardStatementParser.swift` (HDFC "EMI " eligibility-prefix strip, bug-042).
+`Nidhi/Statements/CardStatementParser.swift` (HDFC "EMI " eligibility-prefix strip, bug-042).
 
 ## Goal
 
@@ -20,7 +20,7 @@ Exit 0 = all pass. Never commits real PDFs or real amounts.
 - **Create** `tools/parser-harness/expectations.json` — checked in, redacted (hashes/counts, no amounts).
 - **Create** `tools/parser-harness/fixtures/` + add `tools/parser-harness/fixtures/` to `.gitignore`
   (also gitignore `tools/parser-harness/a.out` and `*.o`).
-- **Commit** the pending diff in `WinTheMoney/Statements/CardStatementParser.swift` (already in working tree — do
+- **Commit** the pending diff in `Nidhi/Statements/CardStatementParser.swift` (already in working tree — do
   NOT rewrite it; it is verified).
 - **Edit** `AGENTS.md` and `docs/statements-and-import.md` — replace the "rebuild a harness by hand"
   instructions with `tools/parser-harness/run.sh`.
@@ -38,7 +38,7 @@ Exit 0 = all pass. Never commits real PDFs or real amounts.
    methods/Codable conformances you don't need). If a parser file imports SwiftUI-only types, exclude
    that file from the harness rather than stubbing UI.
 3. Compile set (start here, adjust from compiler errors):
-   `swiftc -O Stubs.swift ../../WinTheMoney/Statements/PDFTableReader.swift ../../WinTheMoney/Statements/StatementParsers.swift ../../WinTheMoney/Statements/CardStatementParser.swift main.swift -o harness`
+   `swiftc -O Stubs.swift ../../Nidhi/Statements/PDFTableReader.swift ../../Nidhi/Statements/StatementParsers.swift ../../Nidhi/Statements/CardStatementParser.swift main.swift -o harness`
    `StatementImporter.swift` likely pulls in Vision/UIKit — only include it if it compiles cleanly;
    otherwise replicate its routing logic (~10 lines: locked check → `isCombinedHDFC` →
    `CardStatementParser.parse` → `StatementParser.parse`) inside `main.swift` with a comment saying it
@@ -77,7 +77,7 @@ Exit 0 = all pass. Never commits real PDFs or real amounts.
 - Tolerant expectations for reward parsing: HDFC per-row rewards are verified on ~53/95 rows, ICICI is
   best-effort. Assert exact counts from the recorded run, but comment in `expectations.json` docs that
   reward counts < txn counts is expected.
-- `swiftc` invocation: paths contain a space (`win the money`) — quote every path in `run.sh`.
+- `swiftc` invocation: quote every path (checkouts may live under a path with spaces) in `run.sh`.
 
 ## Acceptance criteria
 
